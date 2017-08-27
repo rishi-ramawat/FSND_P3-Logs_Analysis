@@ -118,3 +118,6 @@ $RECYCLE.BIN/
 .DS_Store
 .DS_Store?
 .Trashes
+
+# Allow bin/lib/
+!bin/lib/
