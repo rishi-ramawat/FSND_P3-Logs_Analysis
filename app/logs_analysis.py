@@ -39,11 +39,11 @@ SELECT * FROM (
                 )
             ) / COUNT(log.status),
             3
-        ) as errors FROM log
+        ) as errors_in_percentage FROM log
     GROUP BY day
-    ORDER BY errors DESC
+    ORDER BY errors_in_percentage DESC
 ) as subQuery
-WHERE errors > 1.0;"""
+WHERE errors_in_percentage > 1.0;"""
     }
 ]
 
@@ -57,7 +57,9 @@ def generateReport():
         with Cursor() as cursor:
             cursor.execute(listItem['query'].replace('\n', ' '))
             results = cursor.fetchall()
-            field_names = [str(i[0]).upper() for i in cursor.description]
+            field_names = [
+                str(i[0]).replace('_', ' ').upper() for i in cursor.description
+            ]
 
         print('### ' + listItem['question'], end='\n\n')
         print('| ' + ' | '.join(field_names) + ' |')
