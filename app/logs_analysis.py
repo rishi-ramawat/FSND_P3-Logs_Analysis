@@ -9,20 +9,20 @@ questionsAndQueriesList = [
     {
         "question": "What are the most popular three articles of all time?",
         "query": """
-SELECT articles.title, COUNT(*) as views FROM log, articles
-WHERE log.path = CONCAT('/article/', articles.slug)
-AND log.status LIKE '%200%'
-GROUP BY articles.title
-ORDER BY views DESC
+SELECT articles.title, popular_pages.views FROM articles
+INNER JOIN popular_pages
+ON popular_pages.path = CONCAT('/article/', articles.slug)
+ORDER BY popular_pages.views DESC
 LIMIT 3;"""
     },
     {
         "question": "Who are the most popular article authors of all time?",
         "query": """
-SELECT authors.name, COUNT(*) as views FROM log, authors, articles
-WHERE log.path = CONCAT('/article/', articles.slug)
-AND log.status LIKE '%200%'
-AND articles.author = authors.id
+SELECT authors.name, SUM(popular_pages.views) as views FROM authors
+INNER JOIN articles
+ON articles.author = authors.id
+INNER JOIN popular_pages
+ON popular_pages.path = CONCAT('/article/', articles.slug)
 GROUP BY authors.name
 ORDER BY views DESC;"""
     },

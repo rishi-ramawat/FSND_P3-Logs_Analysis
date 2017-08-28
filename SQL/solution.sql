@@ -6,19 +6,37 @@
 
 -- 1. What are the most popular three articles of all time?
 
-SELECT articles.title, COUNT(*) as views FROM log, articles
-WHERE log.path = CONCAT('/article/', articles.slug)
-AND log.status LIKE '%200%'
-GROUP BY articles.title
-ORDER BY views DESC
+-- Initial Solution:
+-- SELECT articles.title, COUNT(*) as views FROM log, articles
+-- WHERE log.path = CONCAT('/article/', articles.slug)
+-- AND log.status LIKE '%200%'
+-- GROUP BY articles.title
+-- ORDER BY views DESC
+-- LIMIT 3;
+
+-- Refactored & Optimized Solution:
+SELECT articles.title, popular_pages.views FROM articles
+INNER JOIN popular_pages
+ON popular_pages.path = CONCAT('/article/', articles.slug)
+ORDER BY popular_pages.views DESC
 LIMIT 3;
 
 -- 2. Who are the most popular article authors of all time?
 
-SELECT authors.name, COUNT(*) as views FROM log, authors, articles
-WHERE log.path = CONCAT('/article/', articles.slug)
-AND log.status LIKE '%200%'
-AND articles.author = authors.id
+-- Initial Solution:
+-- SELECT authors.name, COUNT(*) as views FROM log, authors, articles
+-- WHERE log.path = CONCAT('/article/', articles.slug)
+-- AND log.status LIKE '%200%'
+-- AND articles.author = authors.id
+-- GROUP BY authors.name
+-- ORDER BY views DESC;
+
+-- Refactored & Optimized Solution:
+SELECT authors.name, SUM(popular_pages.views) as views FROM authors
+INNER JOIN articles
+ON articles.author = authors.id
+INNER JOIN popular_pages
+ON popular_pages.path = CONCAT('/article/', articles.slug)
 GROUP BY authors.name
 ORDER BY views DESC;
 
